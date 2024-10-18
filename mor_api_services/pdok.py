@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 class PDOKService(BasisService):
-    _base_url = "https://api.pdok.nl/bzk/locatieserver/search/v3_1"
     _cache_timeout = 60 * 60 * 24 * 7
 
     def __init__(self, gemeentecode, *args, **kwargs: dict):
@@ -18,9 +17,10 @@ class PDOKService(BasisService):
         super().__init__(*args, **kwargs)
 
     def get_buurten_middels_gemeentecode(
-        self, force_cache
+        self, gemeentecode=None, force_cache=False
     ) -> dict:
-        url = f"{self._base_url}/free"
+        url = self.stel_url_samen("free").strip("/")
+        gemeentecode = gemeentecode if not self._gemeentecode else self._gemeentecode
         results = []
         start = 0
         rows = 10
@@ -28,7 +28,7 @@ class PDOKService(BasisService):
             "start": start,
             "rows": rows,
             "fq": [
-                f"gemeentecode:{self._gemeentecode}",
+                f"gemeentecode:{gemeentecode}",
                 "bron:CBS",
                 "type:buurt",
             ],
@@ -87,14 +87,14 @@ class PDOKService(BasisService):
         cache.set(
             settings.WIJKEN_EN_BUURTEN_CACHE_KEY,
             results_grouped,
-            settings.MELDINGEN_TOKEN_TIMEOUT,
         )
         return results_grouped
 
     def get_wijken_middels_gemeentecode(
-        self, force_cache=False
+        self, gemeentecode=None, force_cache=False
     ) -> dict:
-        url = f"{self._base_url}/free"
+        url = self.stel_url_samen("free").strip("/")
+        gemeentecode = gemeentecode if not self._gemeentecode else self._gemeentecode
         results = []
         start = 0
         rows = 10
@@ -102,7 +102,7 @@ class PDOKService(BasisService):
             "start": start,
             "rows": rows,
             "fq": [
-                f"gemeentecode:{self._gemeentecode}",
+                f"gemeentecode:{gemeentecode}",
                 "bron:CBS",
                 "type:wijk",
             ],
@@ -138,8 +138,8 @@ class PDOKService(BasisService):
             results.extend(r.get("docs", []))
         return results
 
-    def get_buurten_middels_wijkcodes(self, wijkcodes, force_cache=False) -> list:
-        all_data = self.get_buurten_middels_gemeentecode(force_cache=force_cache)
+    def get_buurten_middels_wijkcodes(self, wijkcodes, gemeentecode=None, force_cache=False) -> list:
+        all_data = self.get_buurten_middels_gemeentecode(gemeentecode=gemeentecode, force_cache=force_cache)
         buurtnamen = []
         for wijk in all_data.get("wijken", []):
             if wijk["wijkcode"] in wijkcodes:
