@@ -39,7 +39,7 @@ class TaakRService(BasisService):
         afdeling = self.do_request(
             afdeling_url,
             raw_response=False,
-            force_cache=force_cache
+            force_cache=force_cache,
         )
 
         return afdeling
