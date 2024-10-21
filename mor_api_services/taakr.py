@@ -10,7 +10,7 @@ class TaakRService(BasisService):
 
     def get_afdelingen(self, force_cache=False, taakapplicatie_basis_urls=[]) -> list:
         alle_afdelingen = []
-        next_page = f"{self._base_url}/api/v1/afdeling"
+        next_page = f"{self._base_url}/api/v1/afdeling/"
         while next_page:
             response = self.do_request(
                 next_page,
@@ -46,7 +46,7 @@ class TaakRService(BasisService):
 
     def get_taaktypes(self, params={}, force_cache=False) -> list:
         alle_taaktypes = []
-        next_page = f"{self._base_url}/api/v1/taaktype"
+        next_page = f"{self._base_url}/api/v1/taaktype/"
         while next_page:
             response = self.do_request(
                 next_page,
@@ -113,7 +113,7 @@ class TaakRService(BasisService):
         return taaktypes_with_afdelingen
 
     def vernieuw_taaktypes(self, taaktype_url):
-        url = f"{self._base_url}/api/v1/taaktype/vernieuw"
+        url = f"{self._base_url}/api/v1/taaktype/vernieuw/"
         taaktypes = self.do_request(
             url,
             params={"taakapplicatie_taaktype_url": taaktype_url},
