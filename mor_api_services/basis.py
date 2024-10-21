@@ -159,6 +159,10 @@ class BasisService:
                 )
                 cache.set(cache_key, response, cache_timeout)
 
+        if response.status_code == 401:
+            cache_key = self.haal_token_cache_key()
+            cache.delete(cache_key)
+
         if response.status_code != expected_status_code:
             return self.met_fout(
                 response=response, 
