@@ -139,12 +139,14 @@ class BasisService:
 
         if cache_timeout and method == "get" and not force_cache:
             response = cache.get(cache_key)
+            logger.debug(f"get from cache: {cache_key}, {url}, {response}")
+            
             if (
                 hasattr(response, "status_code")
                 and getattr(response, "status_code") != 200
             ):
                 response = None
-
+        logger.debug(f"cache_timeout={cache_timeout}, method={method}, force_cache={force_cache}")
         if not response:
             try:
                 response: Response = action(**action_params)
