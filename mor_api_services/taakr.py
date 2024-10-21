@@ -35,10 +35,11 @@ class TaakRService(BasisService):
 
         return afdeling
 
-    def get_afdeling_by_url(self, afdeling_url):
+    def get_afdeling_by_url(self, afdeling_url, force_cache=False):
         afdeling = self.do_request(
             afdeling_url,
             raw_response=False,
+            force_cache=force_cache,
         )
 
         return afdeling
