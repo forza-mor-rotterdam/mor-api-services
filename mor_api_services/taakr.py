@@ -39,7 +39,7 @@ class TaakRService(BasisService):
         afdeling = self.do_request(
             afdeling_url,
             raw_response=False,
-            force_cache=force_cache,
+            force_cache=force_cache
         )
 
         return afdeling
@@ -69,18 +69,15 @@ class TaakRService(BasisService):
 
         return taaktype
 
-    def get_taaktypes_with_afdelingen(self, melding, force_cache=False):
-        from apps.context.utils import get_gebruiker_context
-
+    def get_taaktypes_with_afdelingen(self, melding, force_cache=False, context_taaktypes=[]):
         alle_taaktypes = self.get_taaktypes(force_cache=force_cache)
-        gebruiker_context = get_gebruiker_context(self._request.user)
 
         # Check rol/context if taaktype is selected and check if the taaktype is active
         taaktypes_categorized = [
             tt
             for tt in alle_taaktypes
             if tt.get("_links", {}).get("taakapplicatie_taaktype_url")
-            in gebruiker_context.taaktypes
+            in context_taaktypes
             and tt.get("actief", False)
         ]
 
@@ -115,6 +112,16 @@ class TaakRService(BasisService):
 
         return taaktypes_with_afdelingen
 
+    def vernieuw_taaktypes(self, taaktype_url):
+        url = f"{self._base_url}/api/v1/taaktype/vernieuw"
+        taaktypes = self.do_request(
+            url,
+            params={"taakapplicatie_taaktype_url": taaktype_url},
+            cache_timeout=0,
+            raw_response=False,
+        )
+        return taaktypes
+
     def get_taaktype_by_url(self, taaktype_url, force_cache=False):
         taaktype = self.do_request(
             taaktype_url,
@@ -146,10 +153,7 @@ class TaakRService(BasisService):
         ]
         return taaktypes
 
-    def categorize_taaktypes(self, melding, taaktypes):
-        from apps.context.utils import get_gebruiker_context
-
-        gebruiker_context = get_gebruiker_context(self._request.user)
+    def categorize_taaktypes(self, melding, taaktypes, context_taaktypes=[]):
         taaktypes_categorized = [
             [
                 tt.get("_links", {}).get("taakapplicatie_taaktype_url"),
@@ -157,7 +161,7 @@ class TaakRService(BasisService):
             ]
             for tt in taaktypes
             if tt.get("_links", {}).get("taakapplicatie_taaktype_url")
-            in gebruiker_context.taaktypes
+            in context_taaktypes
             and tt.get("actief", False)
         ]
         gebruikte_taaktypes = [
