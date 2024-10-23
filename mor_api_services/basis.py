@@ -173,3 +173,12 @@ class BasisService:
         if raw_response:
             return response
         return self.naar_json(response)
+    
+    def haal_data(self, url, params={}, raw_response=False, cache_timeout=0, force_cache=True):
+        return self.do_request(
+            url,
+            params=params,
+            raw_response=raw_response,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+        )
