@@ -29,6 +29,14 @@ class MORCoreService(BasisService):
             raw_response=False,
         )
 
+    def get_volgende_melding(self, id, params):
+        url = self.stel_url_samen("melding", str(id), "volgende")
+        return self.do_request(
+            url,
+            params=params,
+            raw_response=False,
+        )
+
     def melding_gebeurtenis_toevoegen(
         self,
         id,
