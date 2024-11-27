@@ -68,11 +68,15 @@ class MercureService:
             algorithm=algorithm,
         )
 
-    def publish(self, topic: str, data=[]):
+    def publish(self, topic: str, data=[], type=None):
         data = {
             "topic": topic,
             "data": json.dumps(data),
         }
+        if type:
+            data.update({
+                "type": type,
+            })
 
         response = requests.post(
             self._mercure_url,
