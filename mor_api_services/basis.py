@@ -80,7 +80,7 @@ class BasisService:
         return token
 
     def get_cache_timeout(self, cache_timeout=None):
-        return cache_timeout if cache_timeout else self._cache_timeout
+        return cache_timeout if cache_timeout is not None else self._cache_timeout
 
     def stel_url_samen(self, *pad):
         padden = self._api_path.strip("/").split("/") + list(pad) + [""]
