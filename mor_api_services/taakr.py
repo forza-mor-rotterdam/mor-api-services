@@ -118,6 +118,7 @@ class TaakRService(BasisService):
             url,
             params={"taakapplicatie_taaktype_url": taaktype_url},
             cache_timeout=0,
+            force_cache=True,
             raw_response=False,
         )
         return taaktypes
