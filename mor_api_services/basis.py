@@ -166,7 +166,7 @@ class BasisService:
             cache_key = self.haal_token_cache_key()
             cache.delete(cache_key)
 
-        if response.status_code != expected_status_code:
+        if response.status_code != expected_status_code and not raw_response:
             return self.met_fout(
                 response=response, 
             )
