@@ -55,6 +55,7 @@ class MORCoreService(BasisService):
             f"{self._api_path}/melding/{id}/gebeurtenis-toevoegen/",
             method="post",
             data=data,
+            
             raw_response=False,
         )
         return response
@@ -211,7 +212,7 @@ class MORCoreService(BasisService):
             method="post",
             data=data,
             raw_response=False,
-            expected_status_code=201,
+            verwachte_status_code=201,
         )
         return response
 
@@ -264,7 +265,7 @@ class MORCoreService(BasisService):
             f"{self._api_path}/signaal/",
             method="post",
             data=data,
-            expected_status_code=201,
+            verwachte_status_code=201,
             raw_response=False,
         )
         return response

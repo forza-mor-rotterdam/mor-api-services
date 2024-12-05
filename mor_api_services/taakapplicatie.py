@@ -10,19 +10,23 @@ class TaakapplicatieService(BasisService):
     def melding_veranderd_notificatie_voor_applicatie(
         self, melding_url, notificatie_type
     ):
+        url = self.stel_url_samen("melding")
         return self.do_request(
-            "/api/v1/melding/",
+            url,
             params={
                 "melding_url": melding_url,
                 "notificatie_type": notificatie_type,
             },
+            cache_timeout=0,
         )
 
     def taak_aanmaken(self, data):
-        return self.do_request("/api/v1/taak/", method="post", data=data)
+        url = self.stel_url_samen("taak")
+        return self.do_request(url, method="post", data=data, verwachte_status_code=201)
 
-    def taak_verwijderen(self, url, gebruiker=None):
-        return self.do_request(url, method="delete", params={"gebruiker": gebruiker})
+    def taak_verwijderen(self, taak_basis_url, gebruiker=None):
+        return self.do_request(taak_basis_url, method="delete", params={"gebruiker": gebruiker}, verwachte_status_code=204)
     
-    def taak_status_aanpassen(self, url, data):
+    def taak_status_aanpassen(self, taak_basis_url, data):
+        url = f"{taak_basis_url}status-aanpassen/"
         return self.do_request(url, method="patch", data=data)

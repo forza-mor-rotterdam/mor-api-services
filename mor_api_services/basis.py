@@ -105,10 +105,22 @@ class BasisService:
         try:
             return response.json()
         except Exception as e:
-            return {"bericht": f"{e}, response text: {response.text}"}
+            return {
+                "error": {
+                    "status_code": response.status_code,
+                    "bericht": "Geen json",
+                    "tekst": response.text,
+                },
+            }
 
-    def met_fout(self, response=None, fout=None):
-        logger.warning(f"Fout afhandeling is niet geimplementeerd voor de service: {self.__class__.__name__}")
+    def fout(self, response=None, fout=None, verwachte_status_code=None):
+        return {
+            "error": {
+                "status_code": response.status_code if not fout else 500,
+                "bericht": self.naar_json(response) if not fout else "",
+                "verwachte_status_code": verwachte_status_code,
+            },
+        }
 
     def do_request(
         self,
@@ -118,7 +130,7 @@ class BasisService:
         params={},
         raw_response=True,
         cache_timeout=0,
-        expected_status_code=200,
+        verwachte_status_code=200,
         force_cache=False,
         stream=False,
     ) -> Response | dict:
@@ -153,7 +165,7 @@ class BasisService:
                 response: Response = action(**action_params)
             except Exception as e:
                 cache.delete(cache_key)
-                return self.met_fout(fout=e)
+                return self.fout(fout=e)
 
 
             if cache_timeout and method == "get" and response.status_code == 200:
@@ -166,9 +178,10 @@ class BasisService:
             cache_key = self.haal_token_cache_key()
             cache.delete(cache_key)
 
-        if response.status_code != expected_status_code and not raw_response:
-            return self.met_fout(
+        if response.status_code != verwachte_status_code and not raw_response:
+            return self.fout(
                 response=response, 
+                verwachte_status_code=verwachte_status_code,
             )
         
         if raw_response:
