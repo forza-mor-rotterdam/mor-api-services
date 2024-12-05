@@ -4,3 +4,5 @@ from mor_api_services.mercure import *  # NOQA
 from mor_api_services.onderwerpen import *  # NOQA
 from mor_api_services.pdok import *  # NOQA
 from mor_api_services.taakr import *  # NOQA
+from mor_api_services.taakapplicatie import *  # NOQA
+from mor_api_services.signaalapplicatie import *  # NOQA
