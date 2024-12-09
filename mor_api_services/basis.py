@@ -95,9 +95,10 @@ class BasisService:
             return url
         raise BasisService.BasisUrlFout(f"url: {url}, basis_url: {self._base_url}")
 
-    def get_headers(self):
+    def get_headers(self, gebruik_token=None):
         headers = {"user-agent": urllib3.util.SKIP_HEADER}
-        if self._gebruik_token:
+        gebruik_token = gebruik_token if gebruik_token is not None else self._gebruik_token
+        if gebruik_token:
             headers.update({"Authorization": f"Token {self.haal_token()}"})
         return headers
 
@@ -133,6 +134,7 @@ class BasisService:
         verwachte_status_code=200,
         force_cache=False,
         stream=False,
+        gebruik_token=None,
     ) -> Response | dict:
         action: Request = getattr(requests, method)
         url = self.get_url(url)
@@ -140,7 +142,7 @@ class BasisService:
         response = None
         action_params: dict = {
             "url": url,
-            "headers": self.get_headers(),
+            "headers": self.get_headers(gebruik_token),
             "json": data,
             "params": params,
             "timeout": self._timeout,

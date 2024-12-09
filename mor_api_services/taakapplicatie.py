@@ -17,16 +17,24 @@ class TaakapplicatieService(BasisService):
                 "melding_url": melding_url,
                 "notificatie_type": notificatie_type,
             },
+            raw_response=False,
             cache_timeout=0,
         )
 
     def taak_aanmaken(self, data):
         url = self.stel_url_samen("taak")
-        return self.do_request(url, method="post", data=data, verwachte_status_code=201)
+        return self.do_request(url, method="post", data=data, verwachte_status_code=201, raw_response=False)
 
     def taak_verwijderen(self, taak_basis_url, gebruiker=None):
-        return self.do_request(taak_basis_url, method="delete", params={"gebruiker": gebruiker}, verwachte_status_code=204)
+        return self.do_request(taak_basis_url, method="delete", params={"gebruiker": gebruiker}, verwachte_status_code=204, raw_response=False)
     
     def taak_status_aanpassen(self, taak_basis_url, data):
         url = f"{taak_basis_url}status-aanpassen/"
-        return self.do_request(url, method="patch", data=data)
+        return self.do_request(url, method="patch", data=data, raw_response=False)
+    
+    def taaktype_ophalen(self, taaktype_url):
+        return self.do_request(
+            taaktype_url, 
+            raw_response=False,
+            gebruik_token=False,
+        )
