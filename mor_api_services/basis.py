@@ -54,9 +54,9 @@ class BasisService:
 
     def haal_token(self):
         cache_key = self.haal_token_cache_key()
-        token = cache.get(cache_key)
         if not self._token_timeout:
             cache.delete(cache_key)
+        token = cache.get(cache_key)
 
         if not token:
             padden = self._base_url.strip("/").split("/") + self._token_api.strip("/").split("/") + [""]
