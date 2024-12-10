@@ -67,6 +67,7 @@ class BasisService:
                     "username": self._gebruikersnaam,
                     "password": self._wachtwoord,
                 },
+                headers={"user-agent": urllib3.util.SKIP_HEADER},
             )
             if token_response.status_code == 200:
                 token = token_response.json().get("token")
