@@ -59,6 +59,7 @@ class BasisService:
         token = cache.get(cache_key)
 
         if not token:
+            logger.info(f"Vernieuw token: key={cache_key}, timeout={self._token_timeout}")
             padden = self._base_url.strip("/").split("/") + self._token_api.strip("/").split("/") + [""]
             url = "/".join(padden)
             token_response = requests.post(
