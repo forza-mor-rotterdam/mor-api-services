@@ -132,7 +132,7 @@ class BasisService:
         data={},
         params={},
         raw_response=True,
-        cache_timeout=0,
+        cache_timeout=None,
         verwachte_status_code=200,
         force_cache=False,
         stream=False,
