@@ -83,9 +83,10 @@ class MercureService:
 
         return response
 
-    def get_subscriptions(self):
+    def get_subscriptions(self, topic=None):
+        topic = f"/{topic}" if topic else ""
         response = requests.get(
-            f"{self._mercure_url}/subscriptions",
+            f"{self._mercure_url}/subscriptions{topic}",
             headers=self._get_headers(self.get_subscriber_token()),
         )
         response.raise_for_status()
