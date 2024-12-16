@@ -59,7 +59,7 @@ class BasisService:
             logger.info(f"Haal token: NO TOKEN_TIMEOUT token_timeout={self._token_timeout}, delete token from cache")
             cache.delete(cache_key)
         token = cache.get(cache_key)
-        logger.info(f"Haal token: token={token}, token_timeout={self._token_timeout}")
+        logger.info(f"Haal token: token exists={not not token}, token_timeout={self._token_timeout}")
 
         if not token:
             logger.info(f"Haal token: vernieuw token: key={cache_key}, token_timeout={self._token_timeout}")
