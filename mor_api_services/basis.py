@@ -54,12 +54,13 @@ class BasisService:
 
     def haal_token(self):
         cache_key = self.haal_token_cache_key()
+        logger.info(f"Haal token: key={cache_key}, timeout={self._token_timeout}, service={self.__class__.__name__}")
         if not self._token_timeout:
             cache.delete(cache_key)
         token = cache.get(cache_key)
 
         if not token:
-            logger.info(f"Vernieuw token: key={cache_key}, timeout={self._token_timeout}")
+            logger.info(f"Haal token: vernieuw token: key={cache_key}, timeout={self._token_timeout}, service={self.__class__.__name__}")
             padden = self._base_url.strip("/").split("/") + self._token_api.strip("/").split("/") + [""]
             url = "/".join(padden)
             token_response = requests.post(
@@ -72,6 +73,7 @@ class BasisService:
             )
             if token_response.status_code == 200:
                 token = token_response.json().get("token")
+                logger.info(f"Haal token: vernieuw token reponse code=200, key={cache_key}, timeout={self._token_timeout}, service={self.__class__.__name__}")
                 if self._token_timeout:
                     cache.set(cache_key, token, self._token_timeout)
             else:
@@ -179,6 +181,7 @@ class BasisService:
                 cache.set(cache_key, response, cache_timeout)
 
         if response.status_code == 401:
+            logger.info(f"Do request: status code={response.status_code}, url={url}, params={params}")
             cache_key = self.haal_token_cache_key()
             cache.delete(cache_key)
 
