@@ -20,7 +20,7 @@ class BasisService:
     def __init__(self, *args, **kwargs: dict):
         self._base_url = kwargs.pop("basis_url", None)
         self._timeout = kwargs.pop("timeout", None)
-        self._cache_timeout = kwargs.pop("cache_timeout", None)
+        self._cache_timeout = kwargs.pop("cache_timeout", self._cache_timeout)
         self._request = kwargs.pop("request", None)
         self._gebruikersnaam = kwargs.pop("gebruikersnaam", None)
         self._wachtwoord = kwargs.pop("wachtwoord", None)
