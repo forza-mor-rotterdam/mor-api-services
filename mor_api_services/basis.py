@@ -55,12 +55,12 @@ class BasisService:
 
     def haal_token(self):
         cache_key = self.haal_token_cache_key()
-        logger.info(f"Haal token: key={cache_key}, token_timeout={self._token_timeout}, service={self.__class__.__name__}")
+        logger.debug(f"Haal token: key={cache_key}, token_timeout={self._token_timeout}, service={self.__class__.__name__}")
         if not self._token_timeout:
             logger.info(f"Haal token: NO TOKEN_TIMEOUT token_timeout={self._token_timeout}, delete token from cache")
             cache.delete(cache_key)
         token = cache.get(cache_key)
-        logger.info(f"Haal token: token exists={not not token}, token_timeout={self._token_timeout}")
+        logger.debug(f"Haal token: token exists={not not token}, token_timeout={self._token_timeout}")
 
         if not token:
             logger.info(f"Haal token: vernieuw token: key={cache_key}, token_timeout={self._token_timeout}")
@@ -76,7 +76,7 @@ class BasisService:
             )
             if token_response.status_code == 200:
                 token = token_response.json().get("token")
-                logger.info(f"Haal token: vernieuw token reponse code=200, key={cache_key}, token_timeout={self._token_timeout}")
+                logger.info(f"Haal token: vernieuwen geslaagd, reponse code=200, key={cache_key}, token_timeout={self._token_timeout}")
                 if self._token_timeout:
                     cache.set(cache_key, token, self._token_timeout)
             else:
@@ -161,7 +161,7 @@ class BasisService:
 
         if cache_timeout and method == "get" and not force_cache:
             response = cache.get(cache_key)
-            logger.debug(f"get from cache: {cache_key}, {url}, {response}")
+            logger.info(f"get from cache: url={cache_key}, cache_timeout={cache_timeout}, response={response}")
             
             if (
                 hasattr(response, "status_code")
@@ -178,12 +178,12 @@ class BasisService:
 
 
             if cache_timeout and method == "get" and response.status_code == 200:
-                logger.debug(
-                    f"set cache for: url={cache_key}, cache_timeout={cache_timeout}"
+                logger.info(
+                    f"set cache for: url={cache_key}, cache_timeout={cache_timeout}, force_cache={force_cache}"
                 )
                 cache.set(cache_key, response, cache_timeout)
 
-        logger.info(f"Do request: status code={response.status_code}, url={url}, params={params}")
+        logger.debug(f"Do request: status code={response.status_code}, url={url}, params={params}")
         if response.status_code == 401:
             logger.info(f"Do request: Unauthorized")
             cache_key = self.haal_token_cache_key()
