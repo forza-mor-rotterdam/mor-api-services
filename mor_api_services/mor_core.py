@@ -270,10 +270,10 @@ class MORCoreService(BasisService):
         )
         return response
 
-    def onderwerp_alias_list(self, force_cache=False):
+    def onderwerp_alias_list(self, cache_timeout=60 * 60, force_cache=False):
         return self.do_request(
             f"{self._api_path}/onderwerp-alias/",
-            cache_timeout=60 * 60,
+            cache_timeout=cache_timeout,
             force_cache=force_cache,
             params={
                 "limit": 200,
@@ -281,11 +281,12 @@ class MORCoreService(BasisService):
             raw_response=False,
         )
 
-    def get_gebruiker(self, gebruiker_email):
+    def get_gebruiker(self, gebruiker_email, cache_timeout=60 * 60 * 24, force_cache=False, raw_response=True):
         return self.do_request(
             f"{self._api_path}/gebruiker/{gebruiker_email}/",
-            method="get",
-            cache_timeout=60 * 60 * 24,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=raw_response,
         )
 
     def set_gebruiker(self, gebruiker):
