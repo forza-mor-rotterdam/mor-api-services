@@ -161,7 +161,7 @@ class BasisService:
 
         if cache_timeout and method == "get" and not force_cache:
             response = cache.get(cache_key)
-            logger.info(f"get from cache: url={cache_key}, cache_timeout={cache_timeout}, response={response}")
+            logger.debug(f"get from cache: url={cache_key}, cache_timeout={cache_timeout}, response={response}")
             
             if (
                 hasattr(response, "status_code")
