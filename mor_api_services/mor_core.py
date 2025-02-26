@@ -567,3 +567,11 @@ class MORCoreService(BasisService):
             url,
             stream=True,
         )
+
+    def buurten_met_wijken(self, cache_timeout=0):
+        url = self.stel_url_samen("locatie", "buurten-met-wijken")
+        return self.do_request(
+            url,
+            cache_timeout=cache_timeout,
+            raw_response=False,
+        )
