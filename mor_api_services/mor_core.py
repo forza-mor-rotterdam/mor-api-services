@@ -242,6 +242,19 @@ class MORCoreService(BasisService):
         )
         return response
 
+    def taakopdracht_verwijderen(
+        self,
+        taakopdracht_url,
+        gebruiker=None,
+    ):
+        response = self.do_request(
+            taakopdracht_url,
+            params={"gebruiker": gebruiker},
+            method="delete",
+            raw_response=False,
+        )
+        return response
+
     def taak_gebeurtenis_toevoegen(
         self,
         taakopdracht_url,
