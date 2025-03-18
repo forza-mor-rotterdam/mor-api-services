@@ -255,6 +255,34 @@ class MORCoreService(BasisService):
         )
         return response
 
+    def taakopdracht_notificatie(
+        self,
+        melding_url,
+        taakopdracht_url,
+        status,
+        resolutie=None,
+        omschrijving_intern=None,
+        bijlagen=None,
+        gebruiker=None,
+    ):
+        data = {
+            "taakstatus": {
+                "naam": status,
+            },
+            "resolutie": resolutie,
+            "omschrijving_intern": omschrijving_intern,
+            "bijlagen": bijlagen,
+            "gebruiker": gebruiker,
+        }
+        url = f"{melding_url}taakopdracht/{taakopdracht_url.strip('/').split('/')[-1]}/notificatie"
+        response = self.do_request(
+            url,
+            method="post",
+            data=data,
+            raw_response=False,
+        )
+        return response
+
     def taak_gebeurtenis_toevoegen(
         self,
         taakopdracht_url,
