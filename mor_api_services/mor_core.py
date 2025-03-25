@@ -274,7 +274,7 @@ class MORCoreService(BasisService):
             "bijlagen": bijlagen,
             "gebruiker": gebruiker,
         }
-        url = f"{melding_url}taakopdracht/{taakopdracht_url.strip('/').split('/')[-1]}/notificatie"
+        url = f"{melding_url}taakopdracht/{taakopdracht_url.strip('/').split('/')[-1]}/notificatie/"
         response = self.do_request(
             url,
             method="post",
