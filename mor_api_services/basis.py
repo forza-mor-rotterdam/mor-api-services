@@ -110,6 +110,8 @@ class BasisService:
         return headers
 
     def naar_json(self, response):
+        if response.status_code == 204:
+            return {}
         try:
             return response.json()
         except Exception as e:
