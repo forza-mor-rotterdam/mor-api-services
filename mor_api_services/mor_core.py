@@ -259,21 +259,26 @@ class MORCoreService(BasisService):
         self,
         melding_url,
         taakopdracht_url,
-        status,
+        status=None,
         resolutie=None,
         omschrijving_intern=None,
         bijlagen=None,
         gebruiker=None,
+        aangemaakt_op=None,
     ):
         data = {
-            "taakstatus": {
-                "naam": status,
-            },
             "resolutie": resolutie,
             "omschrijving_intern": omschrijving_intern,
             "bijlagen": bijlagen,
             "gebruiker": gebruiker,
+            "aangemaakt_op": aangemaakt_op,
         }
+        if status:
+            data.update({
+                "taakstatus": {
+                    "naam": status,
+                },
+            })
         url = f"{melding_url}taakopdracht/{taakopdracht_url.strip('/').split('/')[-1]}/notificatie/"
         response = self.do_request(
             url,
