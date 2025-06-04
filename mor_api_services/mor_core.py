@@ -622,6 +622,24 @@ class MORCoreService(BasisService):
             raw_response=False,
         )
     
+    def specificatie_lijst(self, force_cache=False, cache_timeout=0):
+        url = self.stel_url_samen("specificatie")
+        return self.do_request(
+            url,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
+        )
+    
+    def specificatie_detail(self, specificatie_uuid, force_cache=False, cache_timeout=0):
+        url = self.stel_url_samen("specificatie", specificatie_uuid)
+        return self.do_request(
+            url,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
+        )
+    
     def specificatie_aanmaken(self, naam:str):
         url = self.stel_url_samen("specificatie")
         return self.do_request(
