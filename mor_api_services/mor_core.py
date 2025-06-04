@@ -622,10 +622,11 @@ class MORCoreService(BasisService):
             raw_response=False,
         )
     
-    def specificatie_lijst(self, force_cache=False, cache_timeout=0):
+    def specificatie_lijst(self, params={}, force_cache=False, cache_timeout=0):
         url = self.stel_url_samen("specificatie")
         return self.do_request(
             url,
+            params=params,
             cache_timeout=cache_timeout,
             force_cache=force_cache,
             raw_response=False,
