@@ -621,3 +621,33 @@ class MORCoreService(BasisService):
             cache_timeout=cache_timeout,
             raw_response=False,
         )
+    
+    def specificatie_aanmaken(self, naam:str):
+        url = self.stel_url_samen("specificatie")
+        return self.do_request(
+            url,
+            data={
+                "naam": naam
+            },
+            method="post",
+            raw_response=False,
+        )
+    
+    def specificatie_naam_aanpassen(self, specificatie_uuid, naam:str):
+        url = self.stel_url_samen("specificatie", specificatie_uuid)
+        return self.do_request(
+            url,
+            data={
+                "naam": naam
+            },
+            method="patch",
+            raw_response=False,
+        )
+    
+    def specificatie_verwijderen(self, specificatie_uuid):
+        url = self.stel_url_samen("specificatie", specificatie_uuid)
+        return self.do_request(
+            url,
+            method="delete",
+            raw_response=False,
+        )
