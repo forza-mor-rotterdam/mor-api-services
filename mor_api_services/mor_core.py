@@ -633,7 +633,7 @@ class MORCoreService(BasisService):
         )
     
     def specificatie_detail(self, specificatie_uuid, force_cache=False, cache_timeout=0):
-        url = self.stel_url_samen("specificatie", specificatie_uuid)
+        url = self.stel_url_samen("specificatie", str(specificatie_uuid))
         return self.do_request(
             url,
             cache_timeout=cache_timeout,
@@ -653,7 +653,7 @@ class MORCoreService(BasisService):
         )
     
     def specificatie_naam_aanpassen(self, specificatie_uuid, naam:str):
-        url = self.stel_url_samen("specificatie", specificatie_uuid)
+        url = self.stel_url_samen("specificatie", str(specificatie_uuid))
         return self.do_request(
             url,
             data={
@@ -664,7 +664,7 @@ class MORCoreService(BasisService):
         )
     
     def specificatie_verwijderen(self, specificatie_uuid):
-        url = self.stel_url_samen("specificatie", specificatie_uuid)
+        url = self.stel_url_samen("specificatie", str(specificatie_uuid))
         return self.do_request(
             url,
             method="delete",
