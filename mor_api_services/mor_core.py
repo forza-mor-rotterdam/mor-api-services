@@ -670,3 +670,14 @@ class MORCoreService(BasisService):
             method="delete",
             raw_response=False,
         )
+    
+    def specificatie_terughalen(self, specificatie_uuid):
+        url = self.stel_url_samen("specificatie", str(specificatie_uuid))
+        return self.do_request(
+            url,
+            data={
+                "verwijderd_op": None,
+            },
+            method="patch",
+            raw_response=False,
+        )
