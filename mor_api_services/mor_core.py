@@ -95,6 +95,34 @@ class MORCoreService(BasisService):
             data=data,
             raw_response=False,
         )
+    
+    def melding_afhandelen(
+        self,
+        id,
+        resolutie,
+        afhandelreden=None,
+        specificatie=None,
+        omschrijving_extern=None,
+        omschrijving_intern=None,
+        gebruiker=None,
+    ):
+        data = {
+            "resolutie": resolutie,
+            "afhandelreden": afhandelreden,
+            "specificatie": specificatie,
+            "omschrijving_extern": omschrijving_extern,
+            "omschrijving_intern": omschrijving_intern,
+            "gebruiker": gebruiker,
+            "status": {
+                "naam": "afgehandeld",
+            }
+        }
+        return self.do_request(
+            url=self.stel_url_samen("melding", str(id), "status-aanpassen"),
+            method="patch",
+            data=data,
+            raw_response=False,
+        )
 
     def melding_heropenen(
         self,
