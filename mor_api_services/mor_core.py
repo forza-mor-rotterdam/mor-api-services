@@ -677,6 +677,7 @@ class MORCoreService(BasisService):
                 "naam": naam
             },
             method="post",
+            verwachte_status_code=201,
             raw_response=False,
         )
     
@@ -696,6 +697,7 @@ class MORCoreService(BasisService):
         return self.do_request(
             url,
             method="delete",
+            verwachte_status_code=204,
             raw_response=False,
         )
     
