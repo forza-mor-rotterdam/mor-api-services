@@ -141,7 +141,6 @@ class MORCoreService(BasisService):
                 "status": {
                     "naam": "openstaand",
                 },
-                "resolutie": "niet_opgelost",
             }
         )
         return self.do_request(

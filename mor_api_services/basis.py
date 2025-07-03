@@ -175,6 +175,7 @@ class BasisService:
             try:
                 response: Response = action(**action_params)
             except Exception as e:
+                logger.error(f"Exception e={e}, url={url}, cache_timeout={cache_timeout}, method={method}, force_cache={force_cache}")
                 cache.delete(cache_key)
                 return self.fout(fout=e)
 
