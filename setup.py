@@ -10,7 +10,6 @@ setup(name='mor-api-services',
     packages=['mor_api_services'],
     install_requires=
     [
-        'Django>=4.2.15',
         'requests>=2.29.0',
     ],      
     zip_safe=False)
