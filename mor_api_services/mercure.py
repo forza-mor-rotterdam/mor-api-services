@@ -1,11 +1,17 @@
 import json
 import logging
 
-import jwt
 import requests
 import urllib3
-from django.conf import settings
-from django.core.validators import URLValidator
+
+NO_DJANGO = False
+try:
+    import jwt
+    from django.conf import settings
+    from django.core.validators import URLValidator
+except Exception:
+    NO_DJANGO = True
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +27,8 @@ class MercureService:
         ...
 
     def __init__(self):
+        if NO_DJANGO:
+            raise Exception("Django of jwt zijn niet geinstalleerd")
         self._publish_targets = settings.MERCURE_PUBLISH_TARGETS
         try:
             validate = URLValidator()

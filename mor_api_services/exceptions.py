@@ -1,8 +1,5 @@
-from django.utils.translation import gettext_lazy as _  # noqa: N812
-
-
 class MorApiServicesException(Exception):
-    bericht_type = _("onbekende fout")
+    bericht_type = "onbekende fout"
 
     def __init__(self, bericht):
         self.bericht = bericht
