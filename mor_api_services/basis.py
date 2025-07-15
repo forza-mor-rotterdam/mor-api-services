@@ -4,8 +4,14 @@ from urllib.parse import urlencode, urlparse, urljoin
 import requests
 import urllib3
 from mor_api_services.conf import MOR_API_SERVICES
-from django.core.cache import cache
 from requests import Request, Response
+
+has_cache = True
+try:
+    from django.core.cache import cache
+except Exception:
+    has_cache = False
+
 
 logger = logging.getLogger(__name__)
 
@@ -56,10 +62,10 @@ class BasisService:
     def haal_token(self):
         cache_key = self.haal_token_cache_key()
         logger.debug(f"Haal token: key={cache_key}, token_timeout={self._token_timeout}, service={self.__class__.__name__}")
-        if not self._token_timeout:
+        if not self._token_timeout and has_cache:
             logger.info(f"Haal token: NO TOKEN_TIMEOUT token_timeout={self._token_timeout}, delete token from cache")
             cache.delete(cache_key)
-        token = cache.get(cache_key)
+        token = cache.get(cache_key) if has_cache else None
         logger.debug(f"Haal token: token exists={not not token}, token_timeout={self._token_timeout}")
 
         if not token:
@@ -77,7 +83,7 @@ class BasisService:
             if token_response.status_code == 200:
                 token = token_response.json().get("token")
                 logger.info(f"Haal token: vernieuwen geslaagd, reponse code=200, key={cache_key}, token_timeout={self._token_timeout}")
-                if self._token_timeout:
+                if self._token_timeout and has_cache:
                     cache.set(cache_key, token, self._token_timeout)
             else:
                 raise BasisService.DataOphalenFout(
@@ -158,10 +164,10 @@ class BasisService:
             "stream": stream,
         }
         cache_key = f"{url}?{urlencode(params)}"
-        if force_cache:
+        if force_cache and has_cache:
             cache.delete(cache_key)
 
-        if cache_timeout and method == "get" and not force_cache:
+        if cache_timeout and method == "get" and not force_cache and has_cache:
             response = cache.get(cache_key)
             logger.debug(f"get from cache: url={cache_key}, cache_timeout={cache_timeout}, response={response}")
             
@@ -176,18 +182,19 @@ class BasisService:
                 response: Response = action(**action_params)
             except Exception as e:
                 logger.error(f"Exception e={e}, url={url}, cache_timeout={cache_timeout}, method={method}, force_cache={force_cache}")
-                cache.delete(cache_key)
+                if has_cache:
+                    cache.delete(cache_key)
                 return self.fout(fout=e)
 
 
-            if cache_timeout and method == "get" and response.status_code == 200:
+            if cache_timeout and method == "get" and response.status_code == 200 and has_cache:
                 logger.info(
                     f"set cache for: url={cache_key}, cache_timeout={cache_timeout}, force_cache={force_cache}"
                 )
                 cache.set(cache_key, response, cache_timeout)
 
         logger.debug(f"Do request: status code={response.status_code}, url={url}, params={params}")
-        if response.status_code == 401:
+        if response.status_code == 401 and has_cache:
             logger.info(f"Do request: Unauthorized")
             cache_key = self.haal_token_cache_key()
             cache.delete(cache_key)
