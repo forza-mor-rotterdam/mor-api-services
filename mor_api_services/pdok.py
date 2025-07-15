@@ -3,8 +3,13 @@ import logging
 import math
 
 from mor_api_services.basis import BasisService
-from django.conf import settings
-from django.core.cache import cache
+
+has_cache = True
+try:
+    from django.conf import settings
+    from django.core.cache import cache
+except Exception:
+    has_cache = False
 
 logger = logging.getLogger(__name__)
 
@@ -84,11 +89,12 @@ class PDOKService(BasisService):
                 for wijkcode, w in wijken.items()
             ]
         }
-        cache.set(
-            settings.WIJKEN_EN_BUURTEN_CACHE_KEY,
-            results_grouped,
-            settings.MELDINGEN_TOKEN_TIMEOUT,
-        )
+        if has_cache:
+            cache.set(
+                settings.WIJKEN_EN_BUURTEN_CACHE_KEY,
+                results_grouped,
+                settings.MELDINGEN_TOKEN_TIMEOUT,
+            )
         return results_grouped
 
     def get_wijken_middels_gemeentecode(
