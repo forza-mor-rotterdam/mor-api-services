@@ -16,6 +16,7 @@ class TaakRService(BasisService):
                 next_page,
                 params={
                     "taakapplicatie_basis_url": taakapplicatie_basis_urls,
+                    "limit": 25,
                 },
                 raw_response=False,
                 force_cache=force_cache,
@@ -47,6 +48,9 @@ class TaakRService(BasisService):
     def get_taaktypes(self, params={}, force_cache=False) -> list:
         alle_taaktypes = []
         next_page = f"{self._base_url}/api/v1/taaktype/"
+        params.update({
+            "limit": 25,
+        })
         while next_page:
             response = self.do_request(
                 next_page,

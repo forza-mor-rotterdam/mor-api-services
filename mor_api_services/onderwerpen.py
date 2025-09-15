@@ -15,10 +15,13 @@ class OnderwerpenService(BasisService):
 
     def get_onderwerpen(self, force_cache=False):
         all_onderwerpen = []
-        next_page = f"{self._base_url}/api/v1/category"
+        next_page = f"{self._base_url}/api/v1/category/"
         while next_page:
             response = self.do_request(
                 next_page,
+                params={
+                    "limit": 25,
+                },
                 raw_response=False,
                 force_cache=force_cache,
             )
