@@ -24,7 +24,8 @@ class BasisService:
     _default_error_message = "Er ging iets mis met het ophalen van data!"
 
     def __init__(self, *args, **kwargs: dict):
-        self._base_url = str(kwargs.pop("basis_url")).strip("/") if kwargs.pop("basis_url") is not None else ""
+        basis_url = kwargs.pop("basis_url")
+        self._base_url = str(basis_url).strip("/") if basis_url is not None else ""
         self._timeout = kwargs.pop("timeout", None)
         self._cache_timeout = kwargs.pop("cache_timeout", self._cache_timeout)
         self._request = kwargs.pop("request", None)
