@@ -332,9 +332,6 @@ class MORCoreService(BasisService):
                 },
             })
         url = f"{melding_url}taakopdracht/{taakopdracht_url.strip('/').split('/')[-1]}/notificatie/"
-        logger.info("START: taakopdracht_notificatie_data")
-        logger.info(data)
-        logger.info("END: taakopdracht_notificatie_data")
         response = self.do_request(
             url,
             method="post",
