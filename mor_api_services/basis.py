@@ -168,7 +168,7 @@ class BasisService:
         if force_cache and has_cache:
             cache.delete(cache_key)
 
-        if cache_timeout and method == "get" and not force_cache and has_cache:
+        if cache_timeout and not stream and method == "get" and not force_cache and has_cache:
             response = cache.get(cache_key)
             logger.debug(f"get from cache: url={cache_key}, cache_timeout={cache_timeout}, response={response}")
             
@@ -188,7 +188,7 @@ class BasisService:
                 return self.fout(fout=e)
 
 
-            if cache_timeout and method == "get" and response.status_code == 200 and has_cache:
+            if cache_timeout and not stream and method == "get" and response.status_code == 200 and has_cache:
                 logger.info(
                     f"set cache for: url={cache_key}, cache_timeout={cache_timeout}, force_cache={force_cache}"
                 )
