@@ -660,10 +660,12 @@ class MORCoreService(BasisService):
             raw_response=False,
         )
     
-    def bestand_halen(self, url):
+    def bestand_halen(self, url, stream=True, cache_timeout=0, force_cache=False):
         return self.do_request(
             url,
-            stream=True,
+            stream=stream,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
         )
 
     def buurten_met_wijken(self, cache_timeout=0):
