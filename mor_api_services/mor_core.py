@@ -235,8 +235,8 @@ class MORCoreService(BasisService):
         )
         return response
 
-    def taakapplicaties(self, params={}, cache_timeout=0, force_cache=False):
-        url = self.stel_url_samen("taakopdracht")
+    def applicaties(self, params={}, cache_timeout=0, force_cache=False):
+        url = self.stel_url_samen("applicatie")
         response = self.do_request(
             url=url,
             params=params,
