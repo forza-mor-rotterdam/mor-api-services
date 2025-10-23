@@ -21,10 +21,12 @@ class BasisService:
     _timeout: tuple[int, ...] = (10, 20)
     _cache_timeout = 0
     _token_api: str = None
+    _client_name: str = ""
     _default_error_message = "Er ging iets mis met het ophalen van data!"
 
     def __init__(self, *args, **kwargs: dict):
         basis_url = kwargs.pop("basis_url")
+        self._client_name = kwargs.pop("client_name", None)
         self._base_url = str(basis_url).strip("/") if basis_url is not None else ""
         self._timeout = kwargs.pop("timeout", None)
         self._cache_timeout = kwargs.pop("cache_timeout", self._cache_timeout)
@@ -79,7 +81,7 @@ class BasisService:
                     "username": self._gebruikersnaam,
                     "password": self._wachtwoord,
                 },
-                headers={"user-agent": urllib3.util.SKIP_HEADER},
+                headers={"user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER},
             )
             if token_response.status_code == 200:
                 token = token_response.json().get("token")
@@ -110,7 +112,7 @@ class BasisService:
         raise BasisService.BasisUrlFout(f"url: {url}, basis_url: {self._base_url}")
 
     def get_headers(self, gebruik_token=None):
-        headers = {"user-agent": urllib3.util.SKIP_HEADER}
+        headers = {"user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER}
         gebruik_token = gebruik_token if gebruik_token is not None else self._gebruik_token
         if gebruik_token:
             headers.update({"Authorization": f"Token {self.haal_token()}"})
