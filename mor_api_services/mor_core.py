@@ -256,6 +256,27 @@ class MORCoreService(BasisService):
             raw_response=False,
         )
         return response
+    
+    def herstart_task_taak_aanmaken(self, taakopdracht_uuids=[]):
+        url = self.stel_url_samen("taakopdracht", "herstart-task-taak-aanmaken")
+        try:
+            taakopdrachten = [
+                str(taakopdracht_uuid)
+                for taakopdracht_uuid in taakopdracht_uuids
+            ]
+        except Exception as e:
+            logger.warning(f"Er ging iets mis met het omzetten van de uuid naar str: {e}")
+            taakopdrachten = []
+
+        response = self.do_request(
+            url=url,
+            method="post",
+            data={
+                "taakopdrachten": taakopdrachten,
+            },
+            raw_response=False,
+        )
+        return response
 
     def taak_aanmaken(
         self,
