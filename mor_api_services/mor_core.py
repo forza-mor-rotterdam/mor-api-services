@@ -235,10 +235,24 @@ class MORCoreService(BasisService):
         )
         return response
 
-    def taakapplicaties(self, use_cache=True):
+    def taakapplicaties(self, params={}, cache_timeout=0, force_cache=False):
+        url = self.stel_url_samen("taakopdracht")
         response = self.do_request(
-            f"{self._api_path}/taakapplicatie/",
-            cache_timeout=60 * 60 if use_cache else 0,
+            url=url,
+            params=params,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
+        )
+        return response
+    
+    def taakopdrachten(self, params={}, cache_timeout=0, force_cache=False):
+        url = self.stel_url_samen("taakopdracht")
+        response = self.do_request(
+            url=url,
+            params=params,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
             raw_response=False,
         )
         return response

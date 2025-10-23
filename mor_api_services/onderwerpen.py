@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 class OnderwerpenService(BasisService):
-    _message = True
     _default_error_message = "Er ging iets mis met het ophalen van data van Onderwerpen"
     _cache_timeout = 60 * 60 * 24
 
