@@ -63,6 +63,7 @@ class BasisService:
         return f"{self.__class__.__name__}_{self._base_url}_token"
 
     def haal_token(self):
+        self.token_error = None
         cache_key = self.haal_token_cache_key()
         logger.debug(f"Haal token: key={cache_key}, token_timeout={self._token_timeout}, service={self.__class__.__name__}")
         if not self._token_timeout and has_cache:
@@ -75,23 +76,51 @@ class BasisService:
             logger.info(f"Haal token: vernieuw token: key={cache_key}, token_timeout={self._token_timeout}")
             padden = self._base_url.strip("/").split("/") + self._token_api.strip("/").split("/") + [""]
             url = "/".join(padden)
-            token_response = requests.post(
-                url,
-                json={
-                    "username": self._gebruikersnaam,
-                    "password": self._wachtwoord,
-                },
-                headers={"user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER},
-            )
+
+
+            try:
+                token_response = requests.post(
+                    url,
+                    json={
+                        "username": self._gebruikersnaam,
+                        "password": self._wachtwoord,
+                    },
+                    headers={"user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER},
+                )
+                token_response.raise_for_status()
+                data = token_response.json()
+            except requests.exceptions.JSONDecodeError:
+                self.token_error = {
+                    "error": {
+                        "status_code": 500,
+                        "bericht": "Service verwacht json response van token endpoint",
+                        "verwachte_status_code": 200,
+                    },
+                }
+                return
+            except requests.exceptions.RequestException as e:
+                self.token_error = {
+                    "error": {
+                        "status_code": 500,
+                        "bericht": f"Token endpoint fout: {e}",
+                        "verwachte_status_code": 200,
+                    },
+                }
+                return
+
             if token_response.status_code == 200:
-                token = token_response.json().get("token")
+                token = data.get("token")
                 logger.info(f"Haal token: vernieuwen geslaagd, reponse code=200, key={cache_key}, token_timeout={self._token_timeout}")
                 if self._token_timeout and has_cache:
                     cache.set(cache_key, token, self._token_timeout)
             else:
-                raise BasisService.DataOphalenFout(
-                    f"status code: {token_response.status_code}, response text: {token_response.text}"
-                )
+                self.token_error = {
+                    "error": {
+                        "status_code": token_response.status_code,
+                        "bericht": data,
+                        "verwachte_status_code": 200,
+                    },
+                }
 
         return token
 
@@ -166,6 +195,10 @@ class BasisService:
             "timeout": self._timeout,
             "stream": stream,
         }
+
+        if self.token_error:
+            return self.token_error
+
         cache_key = f"{url}?{urlencode(params)}"
         if force_cache and has_cache:
             cache.delete(cache_key)
