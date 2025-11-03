@@ -63,7 +63,6 @@ class BasisService:
         return f"{self.__class__.__name__}_{self._base_url}_token"
 
     def haal_token(self):
-        self.token_error = None
         cache_key = self.haal_token_cache_key()
         logger.debug(f"Haal token: key={cache_key}, token_timeout={self._token_timeout}, service={self.__class__.__name__}")
         if not self._token_timeout and has_cache:
@@ -184,6 +183,7 @@ class BasisService:
         gebruik_token=None,
     ) -> Response | dict:
         action: Request = getattr(requests, method)
+        self.token_error = None
         url = self.get_url(url)
         cache_timeout = self.get_cache_timeout(cache_timeout)
         response = None
