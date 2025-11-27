@@ -21,6 +21,7 @@ class BasisService:
     _timeout: tuple[int, ...] = (10, 20)
     _cache_timeout = 0
     _token_api: str = None
+    _token: str = None
     _client_name: str = ""
     _default_error_message = "Er ging iets mis met het ophalen van data!"
 
@@ -30,6 +31,7 @@ class BasisService:
         self._base_url = str(basis_url).strip("/") if basis_url is not None else ""
         self._timeout = kwargs.pop("timeout", None)
         self._cache_timeout = kwargs.pop("cache_timeout", self._cache_timeout)
+        self._token = kwargs.pop("token", self._token)
         self._request = kwargs.pop("request", None)
         self._gebruikersnaam = kwargs.pop("gebruikersnaam", None)
         self._wachtwoord = kwargs.pop("wachtwoord", None)
@@ -63,6 +65,9 @@ class BasisService:
         return f"{self.__class__.__name__}_{self._base_url}_token"
 
     def haal_token(self):
+        if self._token:
+            return self._token
+        
         cache_key = self.haal_token_cache_key()
         logger.debug(f"Haal token: key={cache_key}, token_timeout={self._token_timeout}, service={self.__class__.__name__}")
         if not self._token_timeout and has_cache:

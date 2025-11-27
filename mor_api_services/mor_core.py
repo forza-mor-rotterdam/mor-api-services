@@ -21,6 +21,15 @@ class MORCoreService(BasisService):
             )
             return self.naar_json(response)
         return response
+    
+    def get_meldingen(self, params={}):
+        url = self.stel_url_samen("melding")
+        response = self.do_request(
+            url=url,
+            params=params,
+            raw_response=False,
+        )
+        return response
 
     def get_melding(self, id, query_string=""):
         url = self.stel_url_samen("melding", str(id))
@@ -36,6 +45,16 @@ class MORCoreService(BasisService):
             params=params,
             raw_response=False,
         )
+    
+    def signaal_aanmaken(self, signaal_data):
+        url = self.stel_url_samen("signaal")
+        response = self._do_request(
+            url=url,
+            method="post",
+            data=signaal_data,
+            verwachte_status_code=201,
+        )
+        return response
 
     def melding_gebeurtenis_toevoegen(
         self,
