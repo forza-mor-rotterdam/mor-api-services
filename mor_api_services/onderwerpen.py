@@ -12,9 +12,26 @@ class OnderwerpenService(BasisService):
     def get_onderwerp(self, url, force_cache=False) -> dict:
         return self.do_request(url, raw_response=False, force_cache=force_cache)
 
+    def get_groepen(self, force_cache=False):
+        all_groepen = []
+        next_page = self.stel_url_samen("group")
+        while next_page:
+            response = self.do_request(
+                next_page,
+                params={
+                    "limit": 25,
+                },
+                raw_response=False,
+                force_cache=force_cache,
+            )
+            current_groepen = response.get("results", [])
+            all_groepen.extend(current_groepen)
+            next_page = response.get("_links", {}).get("next")
+        return all_groepen
+
     def get_onderwerpen(self, force_cache=False):
         all_onderwerpen = []
-        next_page = f"{self._base_url}/api/v1/category/"
+        next_page = self.stel_url_samen("category")
         while next_page:
             response = self.do_request(
                 next_page,
