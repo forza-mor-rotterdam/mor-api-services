@@ -46,12 +46,12 @@ class MORCoreService(BasisService):
             raw_response=False,
         )
     
-    def signaal_aanmaken(self, signaal_data):
+    def signaal_aanmaken(self, data):
         url = self.stel_url_samen("signaal")
         response = self._do_request(
             url=url,
             method="post",
-            data=signaal_data,
+            data=data,
             verwachte_status_code=201,
         )
         return response
@@ -411,16 +411,6 @@ class MORCoreService(BasisService):
         return self.do_request(
             f"{taakopdracht_url}gebeurtenis-toevoegen/", method="post", data=data
         )
-
-    def signaal_aanmaken(self, data: {}):
-        response = self.do_request(
-            f"{self._api_path}/signaal/",
-            method="post",
-            data=data,
-            verwachte_status_code=201,
-            raw_response=False,
-        )
-        return response
 
     def onderwerp_alias_list(self, cache_timeout=60 * 60, force_cache=False):
         return self.do_request(
