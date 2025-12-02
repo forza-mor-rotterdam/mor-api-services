@@ -48,7 +48,7 @@ class MORCoreService(BasisService):
     
     def signaal_aanmaken(self, data):
         url = self.stel_url_samen("signaal")
-        response = self._do_request(
+        response = self.do_request(
             url=url,
             method="post",
             data=data,
