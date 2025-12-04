@@ -52,6 +52,7 @@ class MORCoreService(BasisService):
             url=url,
             method="post",
             data=data,
+            raw_response=False,
             verwachte_status_code=201,
         )
         return response
