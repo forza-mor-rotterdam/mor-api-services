@@ -27,6 +27,7 @@ classifiers = [
 requires-python = ">=3.8"
 dependencies = [
     "requests>=2.29.0",
+    "validators>=0.35.0",
 ]
 
 [project.urls]
