@@ -1,5 +1,6 @@
 import logging
 from datetime import date, datetime, timedelta
+import validators
 
 from mor_api_services.basis import BasisService
 
@@ -305,13 +306,24 @@ class MORCoreService(BasisService):
         titel,
         bericht=None,
         gebruiker=None,
+        afhankelijkheid=None,
         additionele_informatie={},
     ):
+        try:
+            afhankelijkheid = [
+                afhankelijkheid_item
+                for afhankelijkheid_item in afhankelijkheid
+                if afhankelijkheid_item.get("taakopdracht_url") and validators.url(afhankelijkheid_item["taakopdracht_url"])
+            ]
+        except Exception:
+            afhankelijkheid = []
+
         data = {
             "taaktype": taakapplicatie_taaktype_url,
             "titel": titel,
             "bericht": bericht,
             "gebruiker": gebruiker,
+            "afhankelijkheid": afhankelijkheid,
             "additionele_informatie": additionele_informatie,
         }
         response = self.do_request(
