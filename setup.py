@@ -11,5 +11,6 @@ setup(name='mor-api-services',
     install_requires=
     [
         'requests>=2.29.0',
+        'validators>=0.35.0',
     ],      
     zip_safe=False)
