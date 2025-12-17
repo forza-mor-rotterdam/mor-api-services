@@ -406,6 +406,33 @@ class MORCoreService(BasisService):
             raw_response=False,
         )
         return response
+    
+    def taakopdracht_uitzetten(
+        self,
+        melding_url,
+        taakopdracht_url,
+        gebruiker=None,
+    ):
+        data = {
+            "gebruiker": gebruiker,
+        }
+        melding_uuid = melding_url.strip('/').split('/')[-1]
+        taakopdracht_uuid = taakopdracht_url.strip('/').split('/')[-1]
+        url = self.stel_url_samen(
+            "melding", 
+            melding_uuid, 
+            "taakopdracht", 
+            taakopdracht_uuid, 
+            "uitzetten"
+        )
+        response = self.do_request(
+            url,
+            method="patch",
+            data=data,
+            raw_response=False,
+            verwachte_status_code=200,
+        )
+        return response
 
     def taak_gebeurtenis_toevoegen(
         self,
