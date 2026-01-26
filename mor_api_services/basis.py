@@ -264,7 +264,7 @@ class BasisService:
         if not isinstance(verwachte_status_code, (list|tuple)):
             verwachte_status_code = [verwachte_status_code]
 
-        if response.status_code in verwachte_status_code and not raw_response:
+        if response.status_code not in verwachte_status_code and not raw_response:
             return self.fout(
                 response=response, 
                 verwachte_status_code=verwachte_status_code,
