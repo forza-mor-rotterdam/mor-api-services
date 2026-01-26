@@ -107,6 +107,7 @@ class BasisService:
                             "user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER,
                         },
                     )
+                    logger.debug(f"request.header: {token_response.request.headers['Authorization']}")
                 token_response.raise_for_status()
                 data = token_response.json()
             except requests.exceptions.JSONDecodeError:
