@@ -13,5 +13,6 @@ class SignaalapplicatieService(BasisService):
             method="post", 
             data=data, 
             cache_timeout=0, 
+            raw_response=False,
             verwachte_status_code=[200, 201],
         )
