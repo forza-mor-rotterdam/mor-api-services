@@ -71,7 +71,7 @@ class BasisService:
     def haal_token_cache_key(self):
         return f"{self.__class__.__name__}_{self._base_url}_token"
 
-    def haal_token(self):
+    def haal_token(self, force_cache=False):
         if self._token:
             return self._token
         
@@ -83,7 +83,7 @@ class BasisService:
         token = cache.get(cache_key) if has_cache else None
         logger.debug(f"Haal token: token exists={not not token}, token_timeout={self._token_timeout}")
 
-        if not token:
+        if not token or force_cache:
             logger.info(f"Haal token: vernieuw token: key={cache_key}, token_timeout={self._token_timeout}")
             padden = self._base_url.strip("/").split("/") + self._token_api.strip("/").split("/") + [""]
             url = "/".join(padden)
