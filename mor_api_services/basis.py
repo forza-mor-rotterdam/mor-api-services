@@ -1,4 +1,5 @@
 import logging
+from requests.auth import HTTPBasicAuth
 from urllib.parse import urlencode, urlparse, urljoin
 
 import requests
@@ -18,6 +19,9 @@ logger = logging.getLogger(__name__)
 
 class BasisService:
     _gebruik_token = False
+    _token_retrieve_method = "post"
+    _auth_header_key = "Authorization"
+    _auth_header_token_prefix = "Token"
     _timeout: tuple[int, ...] = (10, 20)
     _cache_timeout = 0
     _token_api: str = None
@@ -38,11 +42,14 @@ class BasisService:
         self._token_timeout = kwargs.pop("token_timeout", None)
         self._api_path = kwargs.pop("api_pad", MOR_API_SERVICES["API_PAD"])
         self._token_api = kwargs.pop("api_token_pad", MOR_API_SERVICES["API_TOKEN_PAD"])
+        self._token_retrieve_method = kwargs.pop("token_retrieve_method", MOR_API_SERVICES["TOKEN_RETRIEVE_METHOD"])
+        self._auth_header_key = kwargs.pop("auth_header_key", MOR_API_SERVICES["AUTH_HEADER_KEY"])
+        self._auth_header_token_prefix = kwargs.pop("auth_header_token_prefix", MOR_API_SERVICES["AUTH_HEADER_TOKEN_PREFIX"])
 
         if MOR_API_SERVICES["BLOKKEER_TOKEN_GEBRUIK"]:
             self._gebruik_token = False
 
-        if self._gebruik_token and not self._gebruikersnaam and not self._wachtwoord:
+        if self._gebruik_token and not self._gebruikersnaam and not self._wachtwoord and not self._token:
             logger.warning(
                 f"De service '{self.__class__.__name__}' verwacht het gebruik van een token, alleen er zijn geen credentials opgegeven."
             )
@@ -80,17 +87,26 @@ class BasisService:
             logger.info(f"Haal token: vernieuw token: key={cache_key}, token_timeout={self._token_timeout}")
             padden = self._base_url.strip("/").split("/") + self._token_api.strip("/").split("/") + [""]
             url = "/".join(padden)
-
+            verwachte_status_code = [200, 201]
 
             try:
-                token_response = requests.post(
-                    url,
-                    json={
-                        "username": self._gebruikersnaam,
-                        "password": self._wachtwoord,
-                    },
-                    headers={"user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER},
-                )
+                if self._token_retrieve_method == "post":
+                    token_response = requests.post(
+                        url,
+                        json={
+                            "username": self._gebruikersnaam,
+                            "password": self._wachtwoord,
+                        },
+                        headers={"user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER},
+                    )
+                else:
+                    token_response = requests.get(
+                        url,
+                        auth=HTTPBasicAuth(self._gebruikersnaam, self._wachtwoord),
+                        headers={
+                            "user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER,
+                        },
+                    )
                 token_response.raise_for_status()
                 data = token_response.json()
             except requests.exceptions.JSONDecodeError:
@@ -98,7 +114,7 @@ class BasisService:
                     "error": {
                         "status_code": 500,
                         "bericht": "Service verwacht json response van token endpoint",
-                        "verwachte_status_code": 200,
+                        "verwachte_status_code": verwachte_status_code,
                     },
                 }
                 return
@@ -107,14 +123,14 @@ class BasisService:
                     "error": {
                         "status_code": 500,
                         "bericht": f"Token endpoint fout: {e}",
-                        "verwachte_status_code": 200,
+                        "verwachte_status_code": verwachte_status_code,
                     },
                 }
                 return
 
-            if token_response.status_code == 200:
+            if token_response.status_code in verwachte_status_code:
                 token = data.get("token")
-                logger.info(f"Haal token: vernieuwen geslaagd, reponse code=200, key={cache_key}, token_timeout={self._token_timeout}")
+                logger.info(f"Haal token: vernieuwen geslaagd, reponse code={token_response.status_code}, key={cache_key}, token_timeout={self._token_timeout}")
                 if self._token_timeout and has_cache:
                     cache.set(cache_key, token, self._token_timeout)
             else:
@@ -122,7 +138,7 @@ class BasisService:
                     "error": {
                         "status_code": token_response.status_code,
                         "bericht": data,
-                        "verwachte_status_code": 200,
+                        "verwachte_status_code": verwachte_status_code,
                     },
                 }
 
@@ -144,11 +160,14 @@ class BasisService:
             return url
         raise BasisService.BasisUrlFout(f"url: {url}, basis_url: {self._base_url}")
 
+    def get_auth_header(self):
+        return {self._auth_header_key: f"{self._auth_header_token_prefix} {self.haal_token()}"}
+
     def get_headers(self, gebruik_token=None):
         headers = {"user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER}
         gebruik_token = gebruik_token if gebruik_token is not None else self._gebruik_token
         if gebruik_token:
-            headers.update({"Authorization": f"Token {self.haal_token()}"})
+            headers.update(self.get_auth_header())
         return headers
 
     def naar_json(self, response):
@@ -214,7 +233,7 @@ class BasisService:
             
             if (
                 hasattr(response, "status_code")
-                and getattr(response, "status_code") != 200
+                and getattr(response, "status_code") not in [200, 201]
             ):
                 response = None
         logger.debug(f"cache_timeout={cache_timeout}, method={method}, force_cache={force_cache}")
@@ -227,12 +246,14 @@ class BasisService:
                     cache.delete(cache_key)
                 return self.fout(fout=e)
 
-
-            if cache_timeout and not stream and method == "get" and response.status_code == 200 and has_cache:
+            if cache_timeout and not stream and method == "get" and hasattr(response, "status_code") and getattr(response, "status_code") in [200, 201] and has_cache:
                 logger.info(
                     f"set cache for: url={cache_key}, cache_timeout={cache_timeout}, force_cache={force_cache}"
                 )
                 cache.set(cache_key, response, cache_timeout)
+
+        if not hasattr(response, "status_code"):
+            logger.error(f"Exception response={response}, url={url}, cache_timeout={cache_timeout}, method={method}, force_cache={force_cache}")
 
         logger.debug(f"Do request: status code={response.status_code}, url={url}, params={params}")
         if response.status_code == 401 and has_cache:
@@ -240,7 +261,10 @@ class BasisService:
             cache_key = self.haal_token_cache_key()
             cache.delete(cache_key)
 
-        if response.status_code != verwachte_status_code and not raw_response:
+        if not isinstance(verwachte_status_code, (list|tuple)):
+            verwachte_status_code = [verwachte_status_code]
+
+        if response.status_code in verwachte_status_code and not raw_response:
             return self.fout(
                 response=response, 
                 verwachte_status_code=verwachte_status_code,
