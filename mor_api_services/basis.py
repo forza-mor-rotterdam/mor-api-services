@@ -175,6 +175,9 @@ class BasisService:
     def naar_json(self, response):
         if response.status_code == 204:
             return {}
+        if response.text == "":
+            return {}
+
         try:
             return response.json()
         except Exception as e:
