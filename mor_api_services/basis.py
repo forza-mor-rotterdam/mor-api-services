@@ -162,7 +162,8 @@ class BasisService:
         raise BasisService.BasisUrlFout(f"url: {url}, basis_url: {self._base_url}")
 
     def get_auth_header(self):
-        return {self._auth_header_key: f"{self._auth_header_token_prefix} {self.haal_token()}"}
+        prefix = f"{self._auth_header_token_prefix} " if self._auth_header_token_prefix else ""
+        return {self._auth_header_key: f"{prefix}{self.haal_token()}"}
 
     def get_headers(self, gebruik_token=None):
         headers = {"user-agent": self._client_name if self._client_name else urllib3.util.SKIP_HEADER}
