@@ -384,6 +384,9 @@ class MORCoreService(BasisService):
         bijlagen=None,
         gebruiker=None,
         aangemaakt_op=None,
+        reden_afwijzing=None,
+        reden_afwijzing_toelichting=None,
+        vervolg_taaktypes=None,
     ):
         data = {
             "resolutie": resolutie,
@@ -391,6 +394,9 @@ class MORCoreService(BasisService):
             "bijlagen": bijlagen,
             "gebruiker": gebruiker,
             "aangemaakt_op": aangemaakt_op,
+            "reden_afwijzing": reden_afwijzing,
+            "reden_afwijzing_toelichting": reden_afwijzing_toelichting,
+            "vervolg_taaktypes": vervolg_taaktypes if vervolg_taaktypes else [],
         }
         if status:
             data.update({
