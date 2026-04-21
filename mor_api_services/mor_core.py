@@ -22,7 +22,20 @@ class MORCoreService(BasisService):
             )
             return self.naar_json(response)
         return response
-    
+
+    def get_vernietigingslijst(self, query_string=""):
+        url = self.stel_url_samen("vernietigingslijst", "signaal")
+        response = self.do_request(
+            f"{url}?{query_string}",
+            raw_response=True,
+        )
+        if not isinstance(response, dict):
+            logger.info(
+                f"Vernietigingslijst: time={response.elapsed.total_seconds()}, size={len(response.content)}, qs={query_string}"
+            )
+            return self.naar_json(response)
+        return response
+
     def get_meldingen(self, params={}):
         url = self.stel_url_samen("melding")
         response = self.do_request(
